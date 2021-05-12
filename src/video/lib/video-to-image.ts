@@ -1,9 +1,5 @@
 import * as FFmpeg from 'fluent-ffmpeg';
-import * as stream from 'stream';
-import * as fs from 'fs';
 import * as path from 'path';
-import { spawnSync } from 'child_process';
-import * as dayjs from 'dayjs';
 
 // const VIDEO_PATH = path.join(__dirname, '../../../sample/sample.mp4');
 const VIDEO_PATH = path.join(__dirname, '../../../sample/sample-2.mp4');
