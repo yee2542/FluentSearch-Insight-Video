@@ -1,5 +1,5 @@
 
-FROM node:14-alpine3.12 as base
+FROM rickydunlop/nodejs-ffmpeg as base
 COPY yarn.lock yarn.lock
 COPY package.json package.json
 RUN yarn install
