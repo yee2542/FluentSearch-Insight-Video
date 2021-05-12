@@ -5,6 +5,7 @@ services:
     restart: always
     environment:
       PORT: 3000
+      ORIGIN: '*'
     build:
       context: ./
       dockerfile: Dockerfile
