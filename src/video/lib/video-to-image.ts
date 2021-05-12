@@ -1,6 +1,10 @@
 import * as FFmpeg from 'fluent-ffmpeg';
 import * as path from 'path';
 
+const MAX_THREADS = 5;
+const SECOUND_FACTOR = 1000;
+const CHUNK = 30;
+
 // const VIDEO_PATH = path.join(__dirname, '../../../sample/sample.mp4');
 const VIDEO_PATH = path.join(__dirname, '../../../sample/sample-2.mp4');
 
@@ -15,7 +19,6 @@ const getVideoMeta = (path: string) =>
 
 const extractVideo = (i: number, start: number, stop: number, path: string) =>
   new Promise((resolve, reject) => {
-    const SECOUND_FACTOR = 1000;
     const startTime = new Date(start * SECOUND_FACTOR);
     console.log(i, start, stop);
     console.log(startTime.valueOf(), startTime.toISOString().substr(11, 8));
@@ -40,7 +43,6 @@ const extractVideo = (i: number, start: number, stop: number, path: string) =>
       );
   });
 
-const CHUNK = 30;
 (async () => {
   console.log('process...');
   const videoInfo = await getVideoMeta(VIDEO_PATH);
@@ -57,8 +59,23 @@ const CHUNK = 30;
       if (!end) return { start: el, stop: arr[i + 1] };
       return { start: el, stop: duration };
     });
-  console.log(queue);
-  for (const [i, task] of queue.entries()) {
-    await extractVideo(i, task.start, task.stop, VIDEO_PATH);
+
+  const chunkQueue = chunkArray(queue, MAX_THREADS);
+  // console.log(chunkQueue);
+  for (const [i, task] of chunkQueue.entries()) {
+    // await extractVideo(i, task.start, task.stop, VIDEO_PATH);
+
+    await Promise.all(
+      task.map((t, ti) => extractVideo(i + ti, t.start, t.stop, VIDEO_PATH)),
+    );
   }
+
+  console.log('finish');
 })();
+
+function chunkArray<T>(array: Array<T>, size: number): Array<T>[] {
+  if (array.length <= size) {
+    return [array];
+  }
+  return [array.slice(0, size), ...chunkArray(array.slice(size), size)];
+}
