@@ -19,9 +19,7 @@ const getVideoMeta = (path: string) =>
 
 const extractVideo = (i: number, start: number, stop: number, path: string) =>
   new Promise((resolve, reject) => {
-    const startTime = new Date(start * SECOUND_FACTOR);
-    console.log(i, start, stop);
-    console.log(startTime.valueOf(), startTime.toISOString().substr(11, 8));
+    // const startTime = new Date(start * SECOUND_FACTOR);
 
     const timemarks = Array(CHUNK)
       .fill(0)
@@ -61,10 +59,8 @@ const extractVideo = (i: number, start: number, stop: number, path: string) =>
     });
 
   const chunkQueue = chunkArray(queue, MAX_THREADS);
-  // console.log(chunkQueue);
-  for (const [i, task] of chunkQueue.entries()) {
-    // await extractVideo(i, task.start, task.stop, VIDEO_PATH);
 
+  for (const [i, task] of chunkQueue.entries()) {
     await Promise.all(
       task.map((t, ti) => extractVideo(i + ti, t.start, t.stop, VIDEO_PATH)),
     );
