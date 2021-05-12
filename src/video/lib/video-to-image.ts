@@ -6,22 +6,18 @@ const SECOUND_FACTOR = 1000;
 const CHUNK = 30;
 const EXTRACT_RESOLUTION = '1280x720';
 
-// const VIDEO_PATH = path.join(__dirname, '../../../sample/sample.mp4');
 const VIDEO_PATH = path.join(__dirname, '../../../sample/sample-2.mp4');
 
 const getVideoMeta = (path: string) =>
   new Promise<FFmpeg.FfprobeData>((resolve, reject) => {
     FFmpeg.ffprobe(path, function (err, metadata) {
-      //console.dir(metadata); // all metadata
       if (err) return reject(err);
       resolve(metadata);
     });
   });
 
-const extractVideo = (i: number, start: number, stop: number, path: string) =>
+const extractVideo = (start: number, stop: number, path: string) =>
   new Promise((resolve, reject) => {
-    // const startTime = new Date(start * SECOUND_FACTOR);
-
     const timemarks = Array(CHUNK)
       .fill(0)
       .map((_, i) => start + i)
@@ -29,12 +25,9 @@ const extractVideo = (i: number, start: number, stop: number, path: string) =>
 
     FFmpeg(path).on('error', reject).on('end', resolve).takeScreenshots(
       {
-        // filename: `thumbnail-${i}-%i-%s.jpg`,
         filename: `extract-%s.jpg`,
         timemarks,
         size: EXTRACT_RESOLUTION,
-        // size: '640x360',
-        // size: '320x180',
         fastSeek: true,
       },
       './extracts/',
@@ -60,9 +53,9 @@ const extractVideo = (i: number, start: number, stop: number, path: string) =>
 
   const chunkQueue = chunkArray(queue, MAX_THREADS);
 
-  for (const [i, task] of chunkQueue.entries()) {
+  for (const task of chunkQueue) {
     await Promise.all(
-      task.map((t, ti) => extractVideo(i + ti, t.start, t.stop, VIDEO_PATH)),
+      task.map((t) => extractVideo(t.start, t.stop, VIDEO_PATH)),
     );
   }
 
