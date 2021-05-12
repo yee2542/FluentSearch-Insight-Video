@@ -17,44 +17,25 @@ const getVideoMeta = (path: string) =>
     });
   });
 
-const now = dayjs();
-
 const extractVideo = (i: number, start: number, stop: number, path: string) =>
   new Promise((resolve, reject) => {
     const SECOUND_FACTOR = 1000;
     const startTime = new Date(start * SECOUND_FACTOR);
     console.log(i, start, stop);
     console.log(startTime.valueOf(), startTime.toISOString().substr(11, 8));
-    // .toISOString()
-    // .substr(11, 8);
-    // const stopTime = new Date(stop * SECOUND_FACTOR)
-    //   .toISOString()
-    //   .substr(11, 8);
-    const nOfMark = CHUNK * SECOUND_FACTOR;
-    // console.log(nOfMark);
 
-    const timemarks = Array(nOfMark)
+    const timemarks = Array(CHUNK)
       .fill(0)
-      .map((_, i) => {
-        return startTime.valueOf() + CHUNK * i;
-      })
-      .map((el) => new Date(el).toISOString().substr(11, 8));
+      .map((_, i) => start + i)
+      .map((el) => new Date(el * SECOUND_FACTOR).toISOString().substr(11, 8));
 
-    console.log('tm length', timemarks.length);
-    // console.log(JSON.stringify(timemarks, null, 2));
-
-    return resolve({});
     FFmpeg(path)
       .on('error', reject)
       .on('end', resolve)
-      .duration('00:00:10')
       .takeScreenshots(
         {
           filename: `thumbnail-${i}-%i-%s.jpg`,
-          // timemarks,
-          // timemarks: Array(10 * 30)
-          //   .fill(0)
-          //   .map((_, i) => `00:00:${i.toString()}`),
+          timemarks,
           // size: '640x360',
           size: '320x180',
           fastSeek: true,
