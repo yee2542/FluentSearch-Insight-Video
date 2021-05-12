@@ -1,0 +1,20 @@
+version: '3.4'
+services:
+  fluentsearch-insight-video:
+    container_name: FluentSearch-Insight-Video
+    restart: always
+    environment:
+      PORT: 3000
+      ORIGIN: 'true'
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      target: dev
+    ports:
+      - '3000:3000'
+      - '9229:9229'
+    volumes:
+      - './src:/src'
+    logging:
+      options:
+        max-size: 50m
