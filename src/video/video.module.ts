@@ -2,6 +2,6 @@ import { Module } from '@nestjs/common';
 import { VideoService } from './video.service';
 
 @Module({
-  providers: [VideoService]
+  providers: [VideoService],
 })
 export class VideoModule {}
