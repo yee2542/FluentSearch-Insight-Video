@@ -5,6 +5,6 @@ export type ConfigAppProviderType = {
   };
   opsKey: string;
   node_env: 'production' | 'development';
-  origin: RegExp;
+  origin: string;
   port: number;
 };

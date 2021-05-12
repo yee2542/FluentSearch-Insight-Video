@@ -16,7 +16,7 @@ export class ConfigService {
       node_env:
         (process.env.NODE_ENV as ConfigAppProviderType['node_env']) ||
         'development',
-      origin: new RegExp(ORIGIN),
+      origin: ORIGIN,
       port: Number(PORT || 5000),
     };
   }
