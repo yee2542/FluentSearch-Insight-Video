@@ -29,23 +29,24 @@ const extractVideo = (i: number, start: number, stop: number, path: string) =>
     FFmpeg(path).on('error', reject).on('end', resolve).takeScreenshots(
       {
         // filename: `thumbnail-${i}-%i-%s.jpg`,
-        filename: `thumbnail-%s.jpg`,
+        filename: `extract-%s.jpg`,
         timemarks,
+        size: '1280x720',
         // size: '640x360',
-        size: '320x180',
+        // size: '320x180',
         fastSeek: true,
       },
-      './tests/',
+      './extracts/',
     );
   });
 
 (async () => {
   console.log('process...');
   const videoInfo = await getVideoMeta(VIDEO_PATH);
-  const duration = videoInfo.format.duration;
+  const { duration } = videoInfo.format;
+
   if (!duration) throw new Error('unsupported duration format');
   const nOfChunk = Math.round(duration / CHUNK);
-
   const queue = Array(nOfChunk + 1)
     .fill(0)
     .map((_, i) => i * CHUNK) // split chunk
