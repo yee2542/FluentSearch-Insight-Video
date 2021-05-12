@@ -26,19 +26,17 @@ const extractVideo = (i: number, start: number, stop: number, path: string) =>
       .map((_, i) => start + i)
       .map((el) => new Date(el * SECOUND_FACTOR).toISOString().substr(11, 8));
 
-    FFmpeg(path)
-      .on('error', reject)
-      .on('end', resolve)
-      .takeScreenshots(
-        {
-          filename: `thumbnail-${i}-%i-%s.jpg`,
-          timemarks,
-          // size: '640x360',
-          size: '320x180',
-          fastSeek: true,
-        },
-        './tests/',
-      );
+    FFmpeg(path).on('error', reject).on('end', resolve).takeScreenshots(
+      {
+        // filename: `thumbnail-${i}-%i-%s.jpg`,
+        filename: `thumbnail-%s.jpg`,
+        timemarks,
+        // size: '640x360',
+        size: '320x180',
+        fastSeek: true,
+      },
+      './tests/',
+    );
   });
 
 (async () => {
