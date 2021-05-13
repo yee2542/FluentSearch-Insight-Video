@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import FFmpeg from 'fluent-ffmpeg';
 import path from 'path';
-import chunkArray from 'src/utils/chunkArray';
+import chunkArray from '../utils/chunkArray';
 
 const MAX_THREADS = 5;
 const SECOUND_FACTOR = 1000;
