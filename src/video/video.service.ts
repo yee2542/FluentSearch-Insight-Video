@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import * as FFmpeg from 'fluent-ffmpeg';
-import * as path from 'path';
+import FFmpeg from 'fluent-ffmpeg';
+import path from 'path';
 import chunkArray from 'src/utils/chunkArray';
 
 const MAX_THREADS = 5;
@@ -8,9 +8,7 @@ const SECOUND_FACTOR = 1000;
 const CHUNK = 30;
 const EXTRACT_RESOLUTION = '1280x720';
 
-const VIDEO_PATH = path.join(__dirname, '../../../sample/sample-2.mp4');
-
-const TMP_DIR = '/tmp';
+const TMP_DIR = 'tmp-app';
 const TMP_DIR_PATH = path.resolve(TMP_DIR);
 
 @Injectable()
@@ -38,7 +36,7 @@ export class VideoService {
           size: EXTRACT_RESOLUTION,
           fastSeek: true,
         },
-        './extracts/',
+        TMP_DIR_PATH,
       );
     });
   }
@@ -46,7 +44,8 @@ export class VideoService {
   // FIXME: bind to minio client
   async videoToFrames(fileurl: string) {
     Logger.log('process...');
-    const videoInfo = await this.getVideoMeta(VIDEO_PATH);
+    Logger.log('tmp://', TMP_DIR_PATH);
+    const videoInfo = await this.getVideoMeta(fileurl);
     const { duration } = videoInfo.format;
 
     if (!duration) throw new Error('unsupported duration format');
@@ -67,7 +66,7 @@ export class VideoService {
       Logger.log(`processing ${i}/${chunkQueue.length}`);
 
       await Promise.all(
-        task.map((t) => this.extractVideo(t.start, t.stop, VIDEO_PATH)),
+        task.map((t) => this.extractVideo(t.start, t.stop, fileurl)),
       );
     }
 
