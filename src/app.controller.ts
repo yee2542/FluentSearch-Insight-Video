@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Logger } from '@nestjs/common';
 import path from 'path';
 import { AppService } from './app.service';
 import { VideoService } from './video/video.service';
@@ -19,7 +19,7 @@ export class AppController {
 
   @Get('/insight')
   async getVideoInsight() {
-    console.log(VIDEO_PATH);
+    Logger.log('consume:// ', VIDEO_PATH);
     await this.videoService.videoToFrames(VIDEO_PATH);
     return;
   }
