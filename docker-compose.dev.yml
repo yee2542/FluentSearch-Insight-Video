@@ -20,3 +20,11 @@ services:
     logging:
       options:
         max-size: 50m
+  deepdetect:
+    container_name: deepdetect
+    restart: on-failure
+    image: jolibrain/deepdetect_cpu
+    ports:
+      - '8080:8080'
+    volumes:
+      - './models:/opt/models/'
