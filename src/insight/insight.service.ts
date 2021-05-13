@@ -52,16 +52,25 @@ export class InsightService {
     const groupQueue = chunkArray(queue, MAX_INSGHT_ML_THREADS);
 
     writeStream.write('[');
-    for (const [i, task] of groupQueue.entries()) {
+    for (const task of groupQueue) {
       const responses = await Promise.all(
         task.map((t) =>
           this.endpointBuilder<DeepDetectResponseAPI>(t.filePath),
         ),
       );
 
-      responses.forEach((r, ri) => {
-        const parsed = { ...r?.data.body.predictions, nFps: i + ri };
-        writeStream.write(JSON.stringify(parsed));
+      responses.forEach((r) => {
+        const filename = r.data.body.predictions[0].uri;
+        if (!filename) writeStream.write(`{error: 'endpoint not response'}`);
+        else {
+          const fpsNth = filename?.match(/\/extract-(\d*).jpg/);
+          const parsed = {
+            ...r?.data.body.predictions[0],
+            nFps: fpsNth ? fpsNth[1] : -1,
+          };
+          writeStream.write(JSON.stringify(parsed));
+        }
+
         writeStream.write(',');
         writeStream.write('\n');
       });
