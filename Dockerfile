@@ -5,13 +5,13 @@ RUN apt install -y npm
 RUN apt install -y ffmpeg
 RUN npm install --global yarn
 
-WORKDIR /home/app
+WORKDIR /home
 COPY yarn.lock yarn.lock
 COPY package.json package.json
 RUN yarn install
 
 FROM base as dev
-WORKDIR /home/app
+WORKDIR /home
 COPY yarn.lock yarn.lock
 COPY package.json package.json
 RUN yarn install
@@ -19,7 +19,7 @@ ADD . .
 CMD ["yarn", "start:dev"]
 
 FROM base as prod 
-WORKDIR /home/app
+WORKDIR /home
 COPY yarn.lock yarn.lock
 COPY package.json package.json
 RUN yarn install
