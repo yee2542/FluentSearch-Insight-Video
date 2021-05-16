@@ -9,9 +9,7 @@ import chunkArray from '../utils/chunkArray';
 import { TMP_DIR_PATH } from '../video/video.service';
 
 const MAX_INSGHT_ML_THREADS = 3;
-// const MODEL_SERVICE_NAME = 'detection_600';
-// const MODEL_SERVICE_NAME = 'ilsvrc_googlenet';
-const MODEL_SERVICE_NAME = 'detection_201';
+const MODEL_SERVICE_NAME = 'detection_600';
 const FLUENT_SEARCH_VIDEO_INSIGHT_HOSTNAME = 'FluentSearch-Insight-Video';
 const FLUENT_SEARCH_VIDEO_INSIGHT_PORT = 3000;
 @Injectable()
