@@ -1,4 +1,4 @@
-import { HttpService, Injectable } from '@nestjs/common';
+import { HttpService, Injectable, Logger } from '@nestjs/common';
 import {
   DeepDetectRequestAPI,
   DeepDetectResponseAPI,
@@ -9,7 +9,9 @@ import chunkArray from '../utils/chunkArray';
 import { TMP_DIR_PATH } from '../video/video.service';
 
 const MAX_INSGHT_ML_THREADS = 3;
-const MODEL_SERVICE_NAME = 'detection_600';
+// const MODEL_SERVICE_NAME = 'detection_600';
+// const MODEL_SERVICE_NAME = 'ilsvrc_googlenet';
+const MODEL_SERVICE_NAME = 'detection_201';
 const FLUENT_SEARCH_VIDEO_INSIGHT_HOSTNAME = 'FluentSearch-Insight-Video';
 const FLUENT_SEARCH_VIDEO_INSIGHT_PORT = 3000;
 @Injectable()
@@ -60,6 +62,7 @@ export class InsightService {
       );
 
       responses.forEach((r) => {
+        Logger.verbose(r.data);
         const filename = r.data.body.predictions[0].uri;
         if (!filename) writeStream.write(`{error: 'endpoint not response'}`);
         else {
