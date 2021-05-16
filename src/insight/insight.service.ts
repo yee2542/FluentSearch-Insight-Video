@@ -67,6 +67,11 @@ export class InsightService {
           const fpsNth = filename?.match(/\/extract-(\d*).jpg/);
           const parsed = {
             ...r?.data.body.predictions[0],
+            classes: r?.data.body.predictions[0].classes.map((c) => ({
+              ...c,
+              // remove last
+              last: undefined,
+            })),
             nFps: fpsNth ? fpsNth[1] : -1,
           };
           writeStream.write(JSON.stringify(parsed));
