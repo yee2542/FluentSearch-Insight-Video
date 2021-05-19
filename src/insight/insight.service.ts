@@ -72,7 +72,7 @@ export class InsightService {
               // remove last
               last: undefined,
             })),
-            nFps: fpsNth ? fpsNth[1] : -1,
+            nFps: fpsNth ? Number(fpsNth[1]) : -1,
           };
           writeStream.write(JSON.stringify(parsed));
         }
