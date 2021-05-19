@@ -6,8 +6,7 @@ import chunkArray from '../utils/chunkArray';
 const MAX_THREADS = 5;
 const SECOUND_FACTOR = 1000;
 const CHUNK = 30;
-// const EXTRACT_RESOLUTION = '1280x720';
-const EXTRACT_RESOLUTION = '640x360';
+const EXTRACT_RESOLUTION = '1920x1080';
 
 const TMP_DIR = 'tmp-app';
 export const TMP_DIR_PATH = path.resolve(TMP_DIR);
