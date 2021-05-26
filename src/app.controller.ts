@@ -19,11 +19,11 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Get('/insight')
-  async getVideoInsight() {
-    Logger.log('consume:// ', VIDEO_PATH);
-    await this.videoService.videoToFrames(VIDEO_PATH);
-    await this.insightService.sendToInsight();
-    return;
-  }
+  // @Get('/insight')
+  // async getVideoInsight() {
+  //   Logger.log('consume:// ', VIDEO_PATH);
+  //   await this.videoService.videoToFrames(VIDEO_PATH);
+  //   await this.insightService.sendToInsight();
+  //   return;
+  // }
 }
