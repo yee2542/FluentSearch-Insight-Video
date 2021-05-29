@@ -1,4 +1,7 @@
 import { HttpModule, Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { INSIGHT_SCHEMA_NAME } from 'fluentsearch-types';
+import insightSchema from 'fluentsearch-types/dist/entity/insight.entity';
 import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';
 import { InsightInitService } from './insight.init.service';
@@ -15,7 +18,13 @@ const InsightEndpoint = HttpModule.registerAsync({
   }),
 });
 @Module({
-  imports: [ConfigModule, InsightEndpoint],
+  imports: [
+    ConfigModule,
+    InsightEndpoint,
+    MongooseModule.forFeature([
+      { name: INSIGHT_SCHEMA_NAME, schema: insightSchema },
+    ]),
+  ],
   providers: [InsightInitService, InsightService],
   exports: [HttpModule.register({}), InsightService, InsightEndpoint],
 })
