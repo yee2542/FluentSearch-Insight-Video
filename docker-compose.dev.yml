@@ -4,6 +4,13 @@ services:
     container_name: FluentSearch-Insight-Video
     restart: always
     environment:
+      RABBITMQ_ENDPOINT: 'rabbitmq'
+      RABBITMQ_USERNAME: 'root'
+      RABBITMQ_PASSWORD: 'FluentSearchRabbitMQ'
+      DATABASE_CONNECTION: 'mongodb://fluentsearch-bff-mongos/fluentsearch'
+      DATABASE_USERNAME: root
+      DATABASE_PASSWORD: FluentSearch@BFF.MongoDB
+      DATABASE_AUTH_SOURCE: admin
       PORT: 3001
       ORIGIN: 'true'
       ML_ENDPOINT: http://insight:8080
