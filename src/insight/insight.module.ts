@@ -15,7 +15,7 @@ const InsightEndpoint = HttpModule.registerAsync({
   }),
 });
 @Module({
-  imports: [InsightEndpoint],
+  imports: [ConfigModule, InsightEndpoint],
   providers: [InsightInitService, InsightService],
   exports: [HttpModule.register({}), InsightService, InsightEndpoint],
 })

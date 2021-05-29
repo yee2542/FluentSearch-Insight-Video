@@ -26,4 +26,5 @@ export type ConfigAppProviderType = {
     port: number;
     ssl: boolean;
   };
+  tmp_video_server: string;
 };

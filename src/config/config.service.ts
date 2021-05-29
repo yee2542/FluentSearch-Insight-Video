@@ -24,6 +24,7 @@ export class ConfigService {
       MINIO_SECRET_KEY,
       MINIO_SERVER_PORT,
       MINIO_SERVER_SSL,
+      TMP_VIDEO_SERVER,
     } = process.env as ConfigEnvType;
     return {
       database: {
@@ -55,6 +56,7 @@ export class ConfigService {
         port: Number(MINIO_SERVER_PORT),
         ssl: MINIO_SERVER_SSL === 'true',
       },
+      tmp_video_server: TMP_VIDEO_SERVER,
     };
   }
 }
