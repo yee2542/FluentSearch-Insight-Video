@@ -42,10 +42,10 @@ export class VideoService {
   }
 
   // FIXME: bind to minio client
-  async videoToFrames(fileurl: string) {
+  async videoToFrames(filePath: string) {
     Logger.log('process...');
     Logger.log('tmp://', TMP_DIR_PATH);
-    const videoInfo = await this.getVideoMeta(fileurl);
+    const videoInfo = await this.getVideoMeta(filePath);
     const { duration } = videoInfo.format;
 
     if (!duration) throw new Error('unsupported duration format');
@@ -66,7 +66,7 @@ export class VideoService {
       Logger.log(`processing ${i}/${chunkQueue.length}`);
 
       await Promise.all(
-        task.map((t) => this.extractVideo(t.start, t.stop, fileurl)),
+        task.map((t) => this.extractVideo(t.start, t.stop, filePath)),
       );
     }
 
