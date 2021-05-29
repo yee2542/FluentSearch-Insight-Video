@@ -1,20 +1,28 @@
 import { HttpService, Injectable, Logger } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 import {
   DeepDetectRequestAPI,
   DeepDetectResponseAPI,
+  InsightSchema,
+  INSIGHT_SCHEMA_NAME,
 } from 'fluentsearch-types';
 import { createWriteStream, promises } from 'fs';
+import { Model } from 'mongoose';
 import { join } from 'path';
+import { ConfigService } from '../config/config.service';
 import chunkArray from '../utils/chunkArray';
 import { TMP_DIR_PATH } from '../video/video.service';
 
 const MAX_INSGHT_ML_THREADS = 3;
 const MODEL_SERVICE_NAME = 'detection_600';
-const FLUENT_SEARCH_VIDEO_INSIGHT_HOSTNAME = 'FluentSearch-Insight-Video';
-const FLUENT_SEARCH_VIDEO_INSIGHT_PORT = 3000;
 @Injectable()
 export class InsightService {
-  constructor(private deepDetectEndpoint: HttpService) {}
+  constructor(
+    private deepDetectEndpoint: HttpService,
+    private readonly configService: ConfigService,
+    @InjectModel(INSIGHT_SCHEMA_NAME)
+    private readonly insightModel: Model<InsightSchema>,
+  ) {}
 
   private async readDirQueue(dir: string) {
     return (await promises.readdir(dir, 'utf8')).filter((el) =>
@@ -35,7 +43,8 @@ export class InsightService {
         },
       },
       data: [
-        `http://${FLUENT_SEARCH_VIDEO_INSIGHT_HOSTNAME}:${FLUENT_SEARCH_VIDEO_INSIGHT_PORT}/file/${filePath}`,
+        // `http://${FLUENT_SEARCH_VIDEO_INSIGHT_HOSTNAME}:${FLUENT_SEARCH_VIDEO_INSIGHT_PORT}/file/${filePath}`,
+        `${this.configService.get().tmp_video_server}/file/${filePath}`,
       ],
     };
 
@@ -63,6 +72,7 @@ export class InsightService {
         Logger.verbose(r.data);
         const filename = r.data.body.predictions[0].uri;
         if (!filename) writeStream.write(`{error: 'endpoint not response'}`);
+        // if (!filename) throw Error('bad file name')
         else {
           const fpsNth = filename?.match(/\/extract-(\d*).jpg/);
           const parsed = {
@@ -74,6 +84,7 @@ export class InsightService {
             })),
             nFps: fpsNth ? Number(fpsNth[1]) : -1,
           };
+
           writeStream.write(JSON.stringify(parsed));
         }
 
