@@ -9,11 +9,11 @@ import { TMP_DIR_PATH } from './video/video.service';
 
 @Module({
   imports: [
+    ConfigModule,
     ServeStaticModule.forRoot({
       rootPath: TMP_DIR_PATH,
       serveRoot: '/file',
     }),
-    ConfigModule,
     VideoModule,
     InsightModule,
   ],
