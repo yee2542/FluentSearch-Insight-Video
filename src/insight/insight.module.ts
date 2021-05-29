@@ -1,14 +1,22 @@
 import { HttpModule, Module } from '@nestjs/common';
+import { ConfigModule } from '../config/config.module';
+import { ConfigService } from '../config/config.service';
+import { InsightInitService } from './insight.init.service';
 import { InsightService } from './insight.service';
 
-const MODEL_SERVICE_ENDPOINT = 'deepdetect:8080';
+const InsightEndpoint = HttpModule.registerAsync({
+  imports: [ConfigModule],
+  inject: [ConfigService],
+  useFactory: (configService: ConfigService) => ({
+    timeout: 3000 * 1000,
+    maxRedirects: 5,
+    baseURL: configService.get().ml_endpoint,
+    responseType: 'json',
+  }),
+});
 @Module({
-  imports: [
-    HttpModule.register({
-      baseURL: `http://${MODEL_SERVICE_ENDPOINT}`,
-    }),
-  ],
-  providers: [InsightService],
-  exports: [HttpModule.register({}), InsightService],
+  imports: [InsightEndpoint],
+  providers: [InsightInitService, InsightService],
+  exports: [HttpModule.register({}), InsightService, InsightEndpoint],
 })
 export class InsightModule {}
