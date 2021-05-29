@@ -13,15 +13,15 @@ export class AppService implements OnModuleInit {
     const channel = await mq.createChannel();
     channel.prefetch(1);
 
-    // channel.consume(
-    //   WORKER_VIDEO_INSIGHT_QUEUE,
-    //   async (msg) => {
-    //     const payload = JSON.parse(msg?.content.toString() || '') as TaskDTO;
-    //     if (!payload) throw Error('Bad queue parsing');
-    //     Logger.verbose(payload, 'WORKER_INSIGHT_QUEUE');
-    //   },
-    //   { noAck: false },
-    // );
+    channel.consume(
+      WORKER_VIDEO_INSIGHT_QUEUE,
+      async (msg) => {
+        const payload = JSON.parse(msg?.content.toString() || '') as TaskDTO;
+        if (!payload) throw Error('Bad queue parsing');
+        Logger.verbose(payload, 'WORKER_INSIGHT_QUEUE');
+      },
+      { noAck: false },
+    );
   }
   getHello(): string {
     return 'Hello World!';
