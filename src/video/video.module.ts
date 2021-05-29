@@ -1,4 +1,7 @@
 import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { FILES_SCHEMA_NAME } from 'fluentsearch-types';
+import fileSchema from 'fluentsearch-types/dist/entity/file.entity';
 import { MinioModule } from 'nestjs-minio-client';
 import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';
@@ -17,7 +20,16 @@ const MinioInstance = MinioModule.registerAsync({
 });
 
 @Module({
-  imports: [ConfigModule, MinioInstance],
+  imports: [
+    ConfigModule,
+    MinioInstance,
+    MongooseModule.forFeature([
+      {
+        name: FILES_SCHEMA_NAME,
+        schema: fileSchema,
+      },
+    ]),
+  ],
   providers: [VideoService],
   exports: [VideoService],
 })
