@@ -1,10 +1,22 @@
 export type ConfigAppProviderType = {
+  database: {
+    connection: string;
+    username: string;
+    password: string;
+    authSource: string;
+  };
   jwt: {
     secretKey: string;
-    expires: string;
+    expires: number;
   };
-  opsKey: string;
   node_env: 'production' | 'development';
-  origin: string;
+  origin: RegExp;
   port: number;
+  storage_hostname: string;
+  rabbitmq: {
+    endpoint: string;
+    username: string;
+    password: string;
+  };
+  ml_endpoint: string;
 };
