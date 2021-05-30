@@ -28,7 +28,7 @@
     "@nestjs/serve-static": "^2.1.4",
     "amqplib": "^0.8.0",
     "fluent-ffmpeg": "^2.1.2",
-    "fluentsearch-types": "^0.9.11",
+    "fluentsearch-types": "^0.9.12",
     "minio": "^7.0.18",
     "mongoose": "^5.12.11",
     "nestjs-minio-client": "^1.0.6",
