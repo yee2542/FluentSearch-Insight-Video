@@ -1,18 +1,12 @@
-import {
-  BadRequestException,
-  HttpService,
-  Injectable,
-  Logger,
-  OnModuleInit,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 import FFmpeg from 'fluent-ffmpeg';
+import { FileDocument, FILES_SCHEMA_NAME } from 'fluentsearch-types';
+import fs from 'fs';
+import { Model } from 'mongoose';
 import { MinioService } from 'nestjs-minio-client';
 import path, { join } from 'path';
-import fs from 'fs';
 import chunkArray from '../utils/chunkArray';
-import { InjectModel } from '@nestjs/mongoose';
-import { FILES_SCHEMA_NAME, FileDocument } from 'fluentsearch-types';
-import { Model } from 'mongoose';
 
 const MAX_THREADS = 5;
 const SECOUND_FACTOR = 1000;
@@ -23,24 +17,12 @@ const TMP_DIR = 'tmp-app';
 export const TMP_DIR_PATH = path.resolve(TMP_DIR);
 
 @Injectable()
-export class VideoService implements OnModuleInit {
+export class VideoService {
   constructor(
     private readonly minioClient: MinioService,
     @InjectModel(FILES_SCHEMA_NAME)
     private readonly fileModel: Model<FileDocument>,
   ) {}
-  async onModuleInit() {
-    const filename = await this.downloadVideoToServer(
-      '60b2ba414f6bd7e59e6e9cb9',
-    );
-
-    await this.videoToFrames(filename);
-    Logger.verbose('convert finish');
-    await this.clearTmpFile();
-    Logger.verbose('clear tmp file');
-
-    // throw new Error('Method not implemented.');
-  }
 
   async clearTmpFile() {
     const ls = (await fs.promises.readdir(TMP_DIR_PATH)).filter(
