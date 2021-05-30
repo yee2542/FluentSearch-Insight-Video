@@ -29,6 +29,6 @@ jobs:
       - name: Run Typescript Checks
         run: yarn lint
       - name: Run Tests
-        run: yarn test:cov
+        run: yarn test:cov --passWithNoTests
       - name: Run E2E Tests
-        run: yarn test:e2e
+        run: yarn test:e2e --passWithNoTests
