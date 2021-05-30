@@ -6,7 +6,11 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from './config/config.service';
 import amqplib from 'amqplib';
-import { TaskDTO, WORKER_VIDEO_INSIGHT_QUEUE } from 'fluentsearch-types';
+import {
+  FileTypeEnum,
+  TaskDTO,
+  WORKER_VIDEO_INSIGHT_QUEUE,
+} from 'fluentsearch-types';
 import { VideoService } from './video/video.service';
 import { InsightService } from './insight/insight.service';
 
@@ -43,9 +47,18 @@ export class AppService implements OnModuleInit {
             'file path for precessing is not exist',
           );
         await this.videoService.videoToFrames(filePath);
-        await this.insightSerivce.sendToInsight();
-        // await this.videoService.clearTmpFile();
-        // msg && channel.ack(msg);
+        const { owner, fileId } = payload;
+        const fileType = FileTypeEnum.Video;
+        Logger.verbose('send to insight ' + fileId, 'InsightSerivce');
+        await this.insightSerivce.sendToInsight(
+          owner,
+          fileType,
+          fileId as string,
+        );
+        Logger.verbose('Complete insight', 'InsightServer');
+        await this.videoService.clearTmpFile();
+        Logger.verbose('Clear tmp file', 'AppService');
+        msg && channel.ack(msg);
       },
       { noAck: false },
     );
