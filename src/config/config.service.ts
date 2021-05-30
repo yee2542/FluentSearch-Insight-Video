@@ -19,6 +19,12 @@ export class ConfigService {
       RABBITMQ_USERNAME,
       RABBITMQ_PASSWORD,
       ML_ENDPOINT,
+      MINIO_SERVER_ENDPOINT,
+      MINIO_ACCESS_KEY,
+      MINIO_SECRET_KEY,
+      MINIO_SERVER_PORT,
+      MINIO_SERVER_SSL,
+      TMP_VIDEO_SERVER,
     } = process.env as ConfigEnvType;
     return {
       database: {
@@ -43,6 +49,14 @@ export class ConfigService {
         password: RABBITMQ_PASSWORD,
       },
       ml_endpoint: ML_ENDPOINT,
+      minio: {
+        endpoint: MINIO_SERVER_ENDPOINT,
+        access_key: MINIO_ACCESS_KEY,
+        secret_key: MINIO_SECRET_KEY,
+        port: Number(MINIO_SERVER_PORT),
+        ssl: MINIO_SERVER_SSL === 'true',
+      },
+      tmp_video_server: TMP_VIDEO_SERVER,
     };
   }
 }

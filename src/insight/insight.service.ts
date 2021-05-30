@@ -1,20 +1,33 @@
 import { HttpService, Injectable, Logger } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 import {
   DeepDetectRequestAPI,
   DeepDetectResponseAPI,
+  FileTypeEnum,
+  InsightSchema,
+  INSIGHT_SCHEMA_NAME,
+  LanguageEnum,
+  ModelEnum,
 } from 'fluentsearch-types';
-import { createWriteStream, promises } from 'fs';
-import { join } from 'path';
+import { promises } from 'fs';
+import { Model } from 'mongoose';
+import { ConfigService } from '../config/config.service';
 import chunkArray from '../utils/chunkArray';
-import { TMP_DIR_PATH } from '../video/video.service';
+import {
+  EXTRACT_RESOLUTION_SCHEMA,
+  TMP_DIR_PATH,
+} from '../video/video.service';
 
 const MAX_INSGHT_ML_THREADS = 3;
-const MODEL_SERVICE_NAME = 'detection_600';
-const FLUENT_SEARCH_VIDEO_INSIGHT_HOSTNAME = 'FluentSearch-Insight-Video';
-const FLUENT_SEARCH_VIDEO_INSIGHT_PORT = 3000;
+const MODEL_SERVICE_NAME = ModelEnum.detection_600;
 @Injectable()
 export class InsightService {
-  constructor(private deepDetectEndpoint: HttpService) {}
+  constructor(
+    private deepDetectEndpoint: HttpService,
+    private readonly configService: ConfigService,
+    @InjectModel(INSIGHT_SCHEMA_NAME)
+    private readonly insightModel: Model<InsightSchema>,
+  ) {}
 
   private async readDirQueue(dir: string) {
     return (await promises.readdir(dir, 'utf8')).filter((el) =>
@@ -35,23 +48,22 @@ export class InsightService {
         },
       },
       data: [
-        `http://${FLUENT_SEARCH_VIDEO_INSIGHT_HOSTNAME}:${FLUENT_SEARCH_VIDEO_INSIGHT_PORT}/file/${filePath}`,
+        // `http://${FLUENT_SEARCH_VIDEO_INSIGHT_HOSTNAME}:${FLUENT_SEARCH_VIDEO_INSIGHT_PORT}/file/${filePath}`,
+        `${this.configService.get().tmp_video_server}/file/${filePath}`,
       ],
     };
 
     return this.deepDetectEndpoint.post<T>('/predict', payload).toPromise();
   }
 
-  async sendToInsight() {
+  async sendToInsight(owner: string, fileType: FileTypeEnum, fileId: string) {
     const queue = (await this.readDirQueue(TMP_DIR_PATH)).map((el, i) => ({
       i,
       filePath: el,
     }));
 
-    const writeStream = createWriteStream(join(TMP_DIR_PATH, '/response.json'));
     const groupQueue = chunkArray(queue, MAX_INSGHT_ML_THREADS);
 
-    writeStream.write('[');
     for (const task of groupQueue) {
       const responses = await Promise.all(
         task.map((t) =>
@@ -59,30 +71,36 @@ export class InsightService {
         ),
       );
 
-      responses.forEach((r) => {
+      for (const r of responses) {
         Logger.verbose(r.data);
         const filename = r.data.body.predictions[0].uri;
-        if (!filename) writeStream.write(`{error: 'endpoint not response'}`);
+        if (!filename) throw Error('bad file name');
         else {
           const fpsNth = filename?.match(/\/extract-(\d*).jpg/);
-          const parsed = {
-            ...r?.data.body.predictions[0],
-            classes: r?.data.body.predictions[0].classes.map((c) => ({
-              ...c,
-              // remove last
-              last: undefined,
-            })),
-            nFps: fpsNth ? Number(fpsNth[1]) : -1,
-          };
-          writeStream.write(JSON.stringify(parsed));
+          const cats = r?.data.body.predictions[0].classes;
+          for (const cat of cats) {
+            // write results
+            await this.insightModel.create({
+              result: {
+                prob: cat.prob,
+                bbox: cat.bbox,
+                cat: cat.cat,
+              },
+              keyword: cat.cat,
+              owner,
+
+              model: MODEL_SERVICE_NAME,
+              bbox: cat.bbox,
+              prob: cat.prob,
+              lang: LanguageEnum.enus,
+              fileId,
+              fileType,
+              fps: fpsNth ? Number(fpsNth[1]) : -1,
+              extractSize: EXTRACT_RESOLUTION_SCHEMA,
+            });
+          }
         }
-
-        writeStream.write(',');
-        writeStream.write('\n');
-      });
+      }
     }
-
-    writeStream.write(']');
-    writeStream.end();
   }
 }

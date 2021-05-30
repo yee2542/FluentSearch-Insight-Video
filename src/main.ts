@@ -5,6 +5,8 @@ import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
 
 async function bootstrap() {
+  process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
+
   const app = await NestFactory.create(AppModule);
   const config: ConfigAppProviderType = app
     .select(ConfigModule)

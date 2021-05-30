@@ -19,4 +19,12 @@ export type ConfigAppProviderType = {
     password: string;
   };
   ml_endpoint: string;
+  minio: {
+    endpoint: string;
+    access_key: string;
+    secret_key: string;
+    port: number;
+    ssl: boolean;
+  };
+  tmp_video_server: string;
 };
