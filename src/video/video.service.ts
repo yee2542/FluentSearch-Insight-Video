@@ -1,7 +1,11 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import FFmpeg from 'fluent-ffmpeg';
-import { FileDocument, FILES_SCHEMA_NAME } from 'fluentsearch-types';
+import {
+  FileDocument,
+  FILES_SCHEMA_NAME,
+  InsightSchema,
+} from 'fluentsearch-types';
 import fs from 'fs';
 import { Model } from 'mongoose';
 import { MinioService } from 'nestjs-minio-client';
@@ -11,7 +15,12 @@ import chunkArray from '../utils/chunkArray';
 const MAX_THREADS = 5;
 const SECOUND_FACTOR = 1000;
 const CHUNK = 30;
-const EXTRACT_RESOLUTION = '1920x1080';
+// const EXTRACT_RESOLUTION = '1920x1080';
+const EXTRACT_RESOLUTION = '1280x720';
+export const EXTRACT_RESOLUTION_SCHEMA: InsightSchema['extractSize'] = {
+  width: 1280,
+  height: 720,
+};
 
 const TMP_DIR = 'tmp-app';
 export const TMP_DIR_PATH = path.resolve(TMP_DIR);
