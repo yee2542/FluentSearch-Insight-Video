@@ -51,7 +51,7 @@ export class VideoService {
 
     await this.minioClient.client.fGetObject(
       owner,
-      filename,
+      `${fileDocument._id}-${fileDocument.original_filename}`,
       join(TMP_DIR_PATH, fileDocument.original_filename),
     );
     const absolutePath = join(TMP_DIR_PATH, filename);
