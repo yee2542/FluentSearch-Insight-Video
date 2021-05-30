@@ -13,7 +13,10 @@ import { promises } from 'fs';
 import { Model } from 'mongoose';
 import { ConfigService } from '../config/config.service';
 import chunkArray from '../utils/chunkArray';
-import { TMP_DIR_PATH } from '../video/video.service';
+import {
+  EXTRACT_RESOLUTION_SCHEMA,
+  TMP_DIR_PATH,
+} from '../video/video.service';
 
 const MAX_INSGHT_ML_THREADS = 3;
 const MODEL_SERVICE_NAME = ModelEnum.detection_600;
@@ -93,6 +96,7 @@ export class InsightService {
               fileId,
               fileType,
               fps: fpsNth ? Number(fpsNth[1]) : -1,
+              extractSize: EXTRACT_RESOLUTION_SCHEMA,
             });
           }
         }
